@@ -41,7 +41,7 @@
 
 static bool is_power_of_2(unsigned long n)
 {
-    return (n != 0 && ((n & (n - 1)) == 0));
+    return (n > 1 && ((n & (n - 1)) == 0));
 }
 
 //roundup to power of 2 for bitwise modulus: x % n == x & (n - 1).
@@ -86,6 +86,7 @@ struct kfifo *kfifo_alloc(unsigned int size)
 	 * round up to the next power of 2, since our 'let the indices
 	 * wrap' technique works only in this case.
 	 */
+	size = size < 2 ? 2 : 
 	if (!is_power_of_2(size)) {
 		size = roundup_pow_of_two(size);
 	}
@@ -95,8 +96,8 @@ struct kfifo *kfifo_alloc(unsigned int size)
 
     q = malloc(sizeof(struct kfifo));
     if(!q){
-        free(buffer);
-        return NULL;
+	free(buffer);
+	return NULL;
     }
 
 	kfifo_init(q, buffer, size);
